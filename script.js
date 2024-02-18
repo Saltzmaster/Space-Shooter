@@ -66,7 +66,6 @@ function movePlayer() {
     }
 }
 
-
 // Draw player
 function drawPlayer() {
     ctx.beginPath();
@@ -96,7 +95,6 @@ function moveBullets() {
         }
     }
 }
-
 
 // Draw aliens
 function drawAliens() {
@@ -138,6 +136,44 @@ function collisionDetection() {
     }
 }
 
+// Alien movement variables
+let alienDirection = 1; // 1 for moving right, -1 for moving left
+let alienMoveDown = false; // Flag to indicate whether aliens should move down
+const alienSpeed = 1; // Adjust the speed of alien movement as needed
+
+// Function to start alien movement
+function startAlienMovement() {
+    alienMovementInterval = setInterval(moveAliens, 100); // Adjust the interval as needed
+}
+
+// Function to stop alien movement
+function stopAlienMovement() {
+    clearInterval(alienMovementInterval);
+}
+
+// Function to move aliens based on pattern
+function moveAliens() {
+    for (let c = 0; c < alienColumnCount; c++) {
+        for (let r = 0; r < alienRowCount; r++) {
+            if (aliens[c][r].status === 1) {
+                aliens[c][r].x += alienDirection * alienSpeed; // Move aliens horizontally
+
+                // Check if aliens should move down
+                if (alienMoveDown) {
+                    aliens[c][r].y += alienHeight;
+                    alienMoveDown = false; // Reset flag after moving down
+                }
+            }
+        }
+    }
+
+    // Reverse direction and move down if aliens reach canvas boundary
+    if (aliens[0][0].x + alienWidth > canvas.width || aliens[alienColumnCount - 1][alienRowCount - 1].x < 0) {
+        alienDirection = -alienDirection; // Reverse direction
+        alienMoveDown = true; // Set flag to move down
+    }
+}
+
 // Game loop
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -150,4 +186,16 @@ function draw() {
     requestAnimationFrame(draw);
 }
 
-draw();
+// Start button setup
+const startButton = document.getElementById('startButton');
+startButton.addEventListener('click', () => {
+    startAlienMovement(); // Start alien movement when the button is clicked
+    draw(); // Start the game loop
+});
+
+// Stop button setup (optional)
+const stopButton = document.getElementById('stopButton');
+stopButton.addEventListener('click', () => {
+    stopAlienMovement(); // Stop alien movement when the button is clicked
+});
+
